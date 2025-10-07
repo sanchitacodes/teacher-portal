@@ -51,7 +51,7 @@
 
 
 
-const Student = require('../models/Student');
+const Student = require('../models/student');
 const Marks = require('../models/marks');
 const bcrypt = require('bcrypt');
 
