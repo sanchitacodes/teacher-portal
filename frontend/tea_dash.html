@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teacher Dashboard</title>
+</head>
+<body>
+  <h2>Upload Marks</h2>
+  <form id="uploadMarksForm">
+    <input type="text" name="roll_no" placeholder="Roll Number" required />
+    <input type="number" name="marks" placeholder="Marks" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <script>
+    // get teacher_id from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacher_id = urlParams.get('teacher_id');
+
+    document.getElementById("uploadMarksForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const form = e.target;
+      const roll_no = form.querySelector('input[name="roll_no"]').value;
+      const marks = parseInt(form.querySelector('input[name="marks"]').value);
+
+      const data = {
+        teacher_id,
+        marks: [{ roll_no, marks }]
+      };
+
+      try {
+        const res = await fetch("http://localhost:3000/teacher/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        alert(result.message || "Marks uploaded");
+      } catch (err) {
+        console.error(err);
+        alert("Error uploading marks");
+      }
+    });
+  </script>
+</body>
+</html>

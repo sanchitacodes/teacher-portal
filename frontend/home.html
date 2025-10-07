@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Marks Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Marks Portal</h1>
+  <button id="studentBtn">Register as Student</button>
+  <button id="teacherBtn">Register as Teacher</button>
+
+  <script>
+    document.getElementById('studentBtn').addEventListener('click', () => {
+      window.location.href = 'index.html'; // student registration page
+    });
+
+    document.getElementById('teacherBtn').addEventListener('click', () => {
+      window.location.href = 'teacher.html'; // teacher registration page
+    });
+  </script>
+</body>
+</html>

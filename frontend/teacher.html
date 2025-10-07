@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Teacher Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f4f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        width: 360px;
+        background: #fff;
+        padding: 22px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+      h2 {
+        text-align: center;
+        color: #2b2f6b;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      input,
+      button {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #d9dbe6;
+        font-size: 14px;
+      }
+      button {
+        background: #2b2f6b;
+        color: #fff;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .muted {
+        font-size: 12px;
+        color: #777;
+      }
+      .error {
+        color: red;
+        font-size: 12px;
+        margin-top: -6px;
+        margin-bottom: 6px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Teacher Login</h2>
+      <form id="login-form" autocomplete="off">
+        <input type="email" name="email" placeholder="Email" required autocomplete="off" />
+        <input type="password" name="password" placeholder="Password" required autocomplete="new-password" />
+        <div id="login-error" class="error">Invalid email or password</div>
+        <button type="submit" id="login-btn">Login</button>
+        <div class="muted">Only registered teachers can log in.</div>
+      </form>
+    </div>
+
+    <script>
+      const form = document.getElementById("login-form");
+      const loginBtn = document.getElementById("login-btn");
+      const errorBox = document.getElementById("login-error");
+
+      function setBtnState(disabled) {
+        loginBtn.disabled = disabled;
+        loginBtn.style.opacity = disabled ? 0.7 : 1;
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        setBtnState(true);
+        errorBox.style.display = "none";
+
+        const payload = {
+          email: form.email.value.trim(),
+          password: form.password.value
+        };
+
+        try {
+          const res = await fetch("http://localhost:3000/teacher/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+
+          if (res.ok && json.teacher) {
+            window.location.href = `tea_dash.html?teacher_id=${encodeURIComponent(json.teacher._id)}`;
+          } else {
+            errorBox.style.display = "block";
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error logging in");
+        } finally {
+          setBtnState(false);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,303 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Login</title>
+</head>
+<body>
+  <h2>Student Login</h2>
+  <form id="studentLoginForm">
+    <input type="text" name="roll_no" placeholder="Roll Number" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    document.getElementById('studentLoginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const roll_no = form.querySelector('input[name="roll_no"]').value;
+
+      try {
+        const res = await fetch('http://localhost:3000/student/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ roll_no })
+        });
+
+        const result = await res.json();
+
+        if (res.status === 200) {
+          alert(`Welcome ${result.student.name}!`);
+          // Pass roll number in URL to dashboard
+          window.location.href = `stu_dash.html?roll_no=${roll_no}`;
+        } else {
+          alert(result.message || 'Login failed');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error logging in');
+      }
+    });
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Student Login / Register</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f4f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        width: 360px;
+        background: #fff;
+        padding: 22px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 18px;
+      }
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 8px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+        color: #666;
+      }
+      .tab.active {
+        color: #2b2f6b;
+        border-color: #2b2f6b;
+      }
+      form {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+      }
+      form.active {
+        display: flex;
+      }
+      input,
+      button {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #d9dbe6;
+        font-size: 14px;
+      }
+      button {
+        background: #2b2f6b;
+        color: #fff;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .muted {
+        font-size: 12px;
+        color: #777;
+      }
+      .error {
+        color: red;
+        font-size: 12px;
+        margin-top: -6px;
+        margin-bottom: 6px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="tabs">
+        <div id="login-tab" class="tab active">Login</div>
+        <div id="register-tab" class="tab">Register</div>
+      </div>
+
+      <!-- LOGIN -->
+      <form id="login-form" class="active" autocomplete="off">
+        <input
+          type="text"
+          name="roll_no"
+          placeholder="Roll Number"
+          required
+          autocomplete="off"
+        />
+        <div id="login-roll-error" class="error">
+          Invalid roll number or password
+        </div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          autocomplete="new-password"
+        />
+        <div id="login-pass-error" class="error">Password required</div>
+        <button type="submit" id="login-btn">Login</button>
+        <div class="muted">Make sure you have registered.</div>
+      </form>
+
+      <!-- REGISTER -->
+      <form id="register-form" autocomplete="off">
+        <input
+          type="text"
+          name="roll_no"
+          placeholder="Roll Number"
+          required
+          autocomplete="off"
+        />
+        <div id="register-roll-error" class="error">
+          Roll number not in database
+        </div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          required
+          autocomplete="off"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password (choose a secure one)"
+          required
+          autocomplete="new-password"
+        />
+        <button type="submit" id="register-btn">Register</button>
+        <div class="muted">
+          You can only register if your roll number is present in the marks
+          database.
+        </div>
+      </form>
+    </div>
+
+    <!-- Keep the same HTML and CSS above -->
+
+    <script>
+      const loginTab = document.getElementById("login-tab");
+      const registerTab = document.getElementById("register-tab");
+      const loginForm = document.getElementById("login-form");
+      const registerForm = document.getElementById("register-form");
+
+      function setBtnState(btn, disabled) {
+        btn.disabled = disabled;
+        btn.style.opacity = disabled ? 0.7 : 1;
+      }
+
+      function clearErrors(form) {
+        form
+          .querySelectorAll(".error")
+          .forEach((e) => (e.style.display = "none"));
+      }
+
+      function switchTab(showForm, hideForm, showTab, hideTab) {
+        showForm.classList.add("active");
+        hideForm.classList.remove("active");
+        showTab.classList.add("active");
+        hideTab.classList.remove("active");
+
+        // Clear values and errors when switching
+        showForm.reset();
+        hideForm.reset();
+        clearErrors(showForm);
+        clearErrors(hideForm);
+      }
+
+      // Tab switching
+      loginTab.onclick = () =>
+        switchTab(loginForm, registerForm, loginTab, registerTab);
+      registerTab.onclick = () =>
+        switchTab(registerForm, loginForm, registerTab, loginTab);
+
+      // REGISTER handler
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("register-btn");
+        setBtnState(btn, true);
+        clearErrors(registerForm);
+
+        const form = e.target;
+        const payload = {
+          roll_no: form.roll_no.value.trim(),
+          name: form.name.value.trim(),
+          password: form.password.value,
+        };
+
+        try {
+          const res = await fetch("http://localhost:3000/student/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const json = await res.json();
+
+          if (res.ok) {
+            registerForm.reset();
+            loginForm.reset();
+
+            // switch to login tab and prefill roll number
+            loginForm.roll_no.value = payload.roll_no;
+            switchTab(loginForm, registerForm, loginTab, registerTab);
+          } else if (json.message) {
+            document.getElementById("register-roll-error").textContent =
+              json.message;
+            document.getElementById("register-roll-error").style.display =
+              "block";
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setBtnState(btn, false);
+        }
+      });
+
+      // LOGIN handler
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("login-btn");
+        setBtnState(btn, true);
+        clearErrors(loginForm);
+
+        const form = e.target;
+        const payload = {
+          roll_no: form.roll_no.value.trim(),
+          password: form.password.value,
+        };
+
+        try {
+          const res = await fetch("http://localhost:3000/student/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const json = await res.json();
+
+          if (res.ok && json.student) {
+            loginForm.reset();
+            window.location.href = `stu_dash.html?roll_no=${encodeURIComponent(
+              payload.roll_no
+            )}`;
+          } else {
+            document.getElementById("login-roll-error").style.display = "block";
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setBtnState(btn, false);
+        }
+      });
+    </script>
+  </body>
+</html>

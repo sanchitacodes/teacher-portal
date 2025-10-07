@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+</head>
+<body>
+  <h1>Student Dashboard</h1>
+  <h2>Your Marks</h2>
+  <table id="marksTable" border="1" cellpadding="10">
+    <thead>
+      <tr>
+        <th>Roll Number</th>
+        <th>Marks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Marks will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    async function loadMarks() {
+      // Get roll number from URL query parameter
+      const params = new URLSearchParams(window.location.search);
+      const roll_no = params.get('roll_no');
+
+      if (!roll_no) {
+        alert('No roll number found. Please login.');
+        window.location.href = 'student.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/student/marks/${roll_no}`);
+        const data = await res.json();
+
+        const tbody = document.querySelector('#marksTable tbody');
+        tbody.innerHTML = '';
+
+        if (!data.marks || data.marks.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2">No marks found</td></tr>';
+          return;
+        }
+
+        data.marks.forEach(mark => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${mark.roll_no}</td>
+            <td>${mark.marks}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error(err);
+        alert('Error fetching marks');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadMarks);
+  </script>
+</body>
+</html>
