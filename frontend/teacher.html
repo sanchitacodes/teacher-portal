@@ -61,8 +61,20 @@
     <div class="container">
       <h2>Teacher Login</h2>
       <form id="login-form" autocomplete="off">
-        <input type="email" name="email" placeholder="Email" required autocomplete="off" />
-        <input type="password" name="password" placeholder="Password" required autocomplete="new-password" />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          autocomplete="off"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          autocomplete="new-password"
+        />
         <div id="login-error" class="error">Invalid email or password</div>
         <button type="submit" id="login-btn">Login</button>
         <div class="muted">Only registered teachers can log in.</div>
@@ -86,19 +98,21 @@
 
         const payload = {
           email: form.email.value.trim(),
-          password: form.password.value
+          password: form.password.value,
         };
 
         try {
-          const res = await fetch("https://localhoat:3000/teacher/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ username, password })
-})
+          const res = await fetch("http://localhost:3000/teacher/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
           const json = await res.json();
 
           if (res.ok && json.teacher) {
-            window.location.href = `tea_dash.html?teacher_id=${encodeURIComponent(json.teacher._id)}`;
+            window.location.href = `tea_dash.html?teacher_id=${encodeURIComponent(
+              json.teacher._id
+            )}`;
           } else {
             errorBox.style.display = "block";
           }
