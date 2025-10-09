@@ -25,5 +25,9 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/student', studentRoutes);
 app.use('/teacher', teacherRoutes);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${process.env.PORT}`));
+const PORT = process.env.PORT || 3000; // Use Render's port in production, 3000 locally
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
