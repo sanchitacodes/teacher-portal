@@ -20,6 +20,11 @@
   </table>
 
   <script>
+    // Dynamic backend URL for local vs deployed
+    const BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "https://teacher-portal-3.onrender.com"; // replace with your Render URL
+
     async function loadMarks() {
       // Get roll number from URL query parameter
       const params = new URLSearchParams(window.location.search);
@@ -32,7 +37,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:3000/student/marks/${roll_no}`);
+        const res = await fetch(`${BASE_URL}/student/marks/${roll_no}`);
         const data = await res.json();
 
         const tbody = document.querySelector('#marksTable tbody');
